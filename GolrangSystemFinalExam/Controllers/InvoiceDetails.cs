@@ -1,10 +1,8 @@
-﻿using DocumentFormat.OpenXml.Vml;
-using GolrangSystemFinalExam.API.Models;
+﻿using GolrangSystemFinalExam.API.Models;
 using GolrangSystemFinalExam.Core.Domains;
 using GolrangSystemFinalExam.Core.Domains.Common;
 using GolrangSystemFinalExam.Core.Interfaces;
 using GolrangSystemFinalExam.Infrastructure.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GolrangSystemFinalExam.API.Controllers
@@ -19,7 +17,7 @@ namespace GolrangSystemFinalExam.API.Controllers
         private readonly IDiscountRepository _discountRepository;
 
         public InvoiceDetails(
-            IPreInvoiceDetailsRepository service, 
+            IPreInvoiceDetailsRepository service,
             ISellLineProductRepository sellLineProductRepository,
             IPreInvoiceHeaderRepository preInvoiceHeaderRepository,
             IDiscountRepository discountRepositor)
@@ -39,7 +37,7 @@ namespace GolrangSystemFinalExam.API.Controllers
         }
 
         [HttpGet("GetAll")]
-        public async Task<IActionResult> GellAll(GetTotalAmountDto model)
+        public async Task<IActionResult> GellAll()
         {
             var result = await _service.GetAllAsync();
             return CustomOk(result);
@@ -68,7 +66,7 @@ namespace GolrangSystemFinalExam.API.Controllers
         public async Task<IActionResult> Edit(InvoiceDetailEditDto model)
         {
             var PreInvoiceHeader = await _preInvoiceHeaderRepository.GetByIdAsync(model.PreInvoiceHeaderId);
-            if(PreInvoiceHeader is null)
+            if (PreInvoiceHeader is null)
                 return CustomError("عدم وجود فاکتور");
 
             if (PreInvoiceHeader.Status == InvoiceStatus.Final)
