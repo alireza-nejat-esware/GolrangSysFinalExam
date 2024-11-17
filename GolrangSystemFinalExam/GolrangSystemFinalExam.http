@@ -1,0 +1,6 @@
+@GolrangSystemFinalExam_HostAddress = http://localhost:5110
+
+GET {{GolrangSystemFinalExam_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
