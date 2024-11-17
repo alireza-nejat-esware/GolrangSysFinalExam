@@ -9,7 +9,7 @@ namespace GolrangSystemFinalExam.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class InvoiceDetails : BaseController
+    public class InvoiceDetails : ControllerBase
     {
         private readonly IPreInvoiceDetailsRepository _service;
         private readonly ISellLineProductRepository _sellLineProductRepository;
@@ -40,17 +40,17 @@ namespace GolrangSystemFinalExam.API.Controllers
         public async Task<IActionResult> GellAll()
         {
             var result = await _service.GetAllAsync();
-            return CustomOk(result);
+            return Ok(result);
         }
 
         [HttpPost("Create")]
         public async Task<IActionResult> Post(InvoiceDetailAddDto model)
         {
             if (await _service.IsRepetitive(model.ProductId))
-                return CustomError("تکراری");
+                return BadRequest("تکراری");
 
             if (!await _sellLineProductRepository.IsProductExistAsync(model.ProductId))
-                return CustomError("عدم وجود کالا در لاین فروش"); ;
+                return BadRequest("عدم وجود کالا در لاین فروش"); ;
 
             var result = await _service.CreateAsync(new()
             {
@@ -59,7 +59,7 @@ namespace GolrangSystemFinalExam.API.Controllers
                 Price = model.Price,
                 PreInvoiceHeaderId = model.PreInvoiceHeaderId
             });
-            return CustomOk("با موفقیت درج شد.");
+            return Ok("با موفقیت درج شد.");
         }
 
         [HttpPut("{id}")]
@@ -67,10 +67,10 @@ namespace GolrangSystemFinalExam.API.Controllers
         {
             var PreInvoiceHeader = await _preInvoiceHeaderRepository.GetByIdAsync(model.PreInvoiceHeaderId);
             if (PreInvoiceHeader is null)
-                return CustomError("عدم وجود فاکتور");
+                return BadRequest("عدم وجود فاکتور");
 
             if (PreInvoiceHeader.Status == InvoiceStatus.Final)
-                return CustomError("فاکتور نهایی شده");
+                return BadRequest("فاکتور نهایی شده");
 
             await _service.UpdateAsync(new()
             {
@@ -80,14 +80,14 @@ namespace GolrangSystemFinalExam.API.Controllers
                 Price = model.Price,
                 PreInvoiceHeaderId = model.PreInvoiceHeaderId
             });
-            return CustomOk("با موفقیت ویرایش شد.");
+            return Ok("با موفقیت ویرایش شد.");
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);
-            return CustomOk("با موفقیت حذف شد.");
+            return Ok("با موفقیت حذف شد.");
         }
 
         [HttpPost("InvoiceTotalAmount")]
@@ -97,7 +97,7 @@ namespace GolrangSystemFinalExam.API.Controllers
             if (model.discountIncluded)
                 total -= await _discountRepository.GetTotalDiscountByCustomerIdAsync(model.customerId, model.invoiceStatus);
 
-            return CustomOk(total);
+            return Ok(total);
         }
 
     }

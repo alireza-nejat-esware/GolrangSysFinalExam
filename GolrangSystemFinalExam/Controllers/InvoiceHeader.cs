@@ -7,7 +7,7 @@ namespace GolrangSystemFinalExam.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class InvoiceHeader : BaseController
+    public class InvoiceHeader : ControllerBase
     {
         private readonly IPreInvoiceHeaderRepository _service;
         private readonly ISellLineSellerRepository _sellLineSellerRepository;
@@ -35,7 +35,7 @@ namespace GolrangSystemFinalExam.API.Controllers
         public async Task<IActionResult> GellAll()
         {
             var result = await _service.GetAllAsync();
-            return CustomOk(result);
+            return Ok(result);
         }
 
         [HttpPost("ChangeStatus")]
@@ -44,10 +44,10 @@ namespace GolrangSystemFinalExam.API.Controllers
             var item = await _service.GetByIdAsync(id);
             double currentFinaledAmount = await _preInvoiceDetailsRepository.GetInvoiceTotalAmountAsync(item.CustomerId, item.Status);
             if (currentFinaledAmount > 1000000)
-                return CustomError("خطای زیاد بودن مبلغ فاکتور");
+                return BadRequest("خطای زیاد بودن مبلغ فاکتور");
 
             await _service.ChangeStatus(id);
-            return CustomOk("با موفقیت درج شد.");
+            return Ok("با موفقیت درج شد.");
         }
 
         [HttpPost("Create")]
@@ -55,7 +55,7 @@ namespace GolrangSystemFinalExam.API.Controllers
         {
             bool iIsExist = await _sellLineSellerRepository.IsExistAsync(model.SellLineId, model.SellerId);
             if (!iIsExist)
-                return CustomError("عدم وجود فروشنده ");
+                return BadRequest("عدم وجود فروشنده ");
 
             var result = await _service.CreateAsync(new()
             {
@@ -63,7 +63,7 @@ namespace GolrangSystemFinalExam.API.Controllers
                 SellLineId = model.SellLineId,
                 CustomerId = model.CustomerId,
             });
-            return CustomOk("با موفقیت درج شد.");
+            return Ok("با موفقیت درج شد.");
         }
 
         [HttpPut("{id}")]
@@ -72,10 +72,10 @@ namespace GolrangSystemFinalExam.API.Controllers
 
             var item = await _service.GetByIdAsync(model.Id);
             if (item is null)
-                return CustomError("عدم وجود فاکتور");
+                return BadRequest("عدم وجود فاکتور");
 
             if (item.Status == InvoiceStatus.Final)
-                return CustomError("فاکتور نهایی شده است.");
+                return BadRequest("فاکتور نهایی شده است.");
 
             await _service.UpdateAsync(new()
             {
@@ -84,14 +84,14 @@ namespace GolrangSystemFinalExam.API.Controllers
                 SellLineId = model.SellLineId,
                 CustomerId = model.CustomerId,
             });
-            return CustomOk("با موفقیت ویرایش شد.");
+            return Ok("با موفقیت ویرایش شد.");
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);
-            return CustomOk("با موفقیت حذف شد.");
+            return Ok("با موفقیت حذف شد.");
         }
 
     }
