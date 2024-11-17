@@ -29,14 +29,20 @@ namespace GolrangSystemFinalExam.API.Controllers
             _preInvoiceHeaderRepository = preInvoiceHeaderRepository;
             _discountRepository = discountRepositor;
         }
-        [HttpPost("InvoiceTotalAmount")]
-        public async Task<IActionResult> InvoiceTotalAmountAsync(GetTotalAmountDto model)
-        {
-            var total = await _service.GetInvoiceTotalAmountAsync(model.customerId, model.invoiceStatus);
-            if (model.discountIncluded)
-                total -= await _discountRepository.GetTotalDiscountByCustomerIdAsync(model.customerId, model.invoiceStatus);
 
-            return CustomOk(total);
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> Get(int id)
+        {
+            var result = _service.GetByIdAsync(id);
+            return Ok(result);
+        }
+
+        [HttpGet("GetAll")]
+        public async Task<IActionResult> GellAll(GetTotalAmountDto model)
+        {
+            var result = await _service.GetAllAsync();
+            return CustomOk(result);
         }
 
         [HttpPost("Create")]
@@ -84,6 +90,16 @@ namespace GolrangSystemFinalExam.API.Controllers
         {
             await _service.DeleteAsync(id);
             return CustomOk("با موفقیت حذف شد.");
+        }
+
+        [HttpPost("InvoiceTotalAmount")]
+        public async Task<IActionResult> InvoiceTotalAmountAsync(GetTotalAmountDto model)
+        {
+            var total = await _service.GetInvoiceTotalAmountAsync(model.customerId, model.invoiceStatus);
+            if (model.discountIncluded)
+                total -= await _discountRepository.GetTotalDiscountByCustomerIdAsync(model.customerId, model.invoiceStatus);
+
+            return CustomOk(total);
         }
 
     }
