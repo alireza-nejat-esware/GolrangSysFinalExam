@@ -1,7 +1,6 @@
 ﻿using GolrangSystemFinalExam.Core.Domains.Common;
 using GolrangSystemFinalExam.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PreInvoiceDetailsDomain = GolrangSystemFinalExam.Core.Domains.PreInvoiceDetails;
 using PreInvoiceHeaderDomain = GolrangSystemFinalExam.Core.Domains.PreInvoiceHeader;
 using PreInvoiceHeaderEntity = GolrangSystemFinalExam.Infrastructure.Entities.PreInvoiceHeader;
 namespace GolrangSystemFinalExam.Infrastructure.Data.Repositories
@@ -9,25 +8,14 @@ namespace GolrangSystemFinalExam.Infrastructure.Data.Repositories
     public class PreInvoiceHeaderRepository : IPreInvoiceHeaderRepository
     {
         private readonly GolrangSystemFinalExamDbContext _context;
-        //private readonly ISellLineSellerRepository _sellLineSellerRepository;
-        //private readonly IPreInvoiceDetailsRepository _preInvoiceDetailsRepository;
-        public PreInvoiceHeaderRepository(
-            GolrangSystemFinalExamDbContext golrangSystemFinalExamDbContext
-            //ISellLineSellerRepository sellLineSellerRepository,
-            //IPreInvoiceDetailsRepository preInvoiceDetailsRepository
-            )
+
+        public PreInvoiceHeaderRepository(GolrangSystemFinalExamDbContext golrangSystemFinalExamDbContext)
         {
             _context = golrangSystemFinalExamDbContext;
-            //_sellLineSellerRepository = sellLineSellerRepository;
-            //_preInvoiceDetailsRepository = preInvoiceDetailsRepository;
         }
 
         public async Task<int> CreateAsync(PreInvoiceHeaderDomain preInvoiceHeader)
         {
-            //bool iIsExist = await _sellLineSellerRepository.IsExistAsync(preInvoiceHeader.SellLineId, preInvoiceHeader.SellerId);
-            //if (!iIsExist)
-            //    return 0;
-
             var dbModel = new PreInvoiceHeaderEntity()
             {
                 SellLineId = preInvoiceHeader.SellLineId,
@@ -44,7 +32,7 @@ namespace GolrangSystemFinalExam.Infrastructure.Data.Repositories
         {
             PreInvoiceHeaderEntity? item = await GetPreInvoiceHeaderAsync(id);
             if (item is null)
-                return ;
+                return;
 
             _context.Remove(item);
             await _context.SaveChangesAsync();
@@ -119,29 +107,17 @@ namespace GolrangSystemFinalExam.Infrastructure.Data.Repositories
             if (item is null)
                 return;
 
-            if (item.Status == InvoiceStatus.Final)
-                return;
-
-            //List<PreInvoiceDetailsDomain>? items = await _preInvoiceDetailsRepository.GetAllByInvoiceIdAsync(preInvoiceHeader.Id);
-            //if (items.Count == 0)
-            //    item.SellerId = preInvoiceHeader.SellerId;
-
             item.SellLineId = preInvoiceHeader.SellLineId;
             item.CustomerId = preInvoiceHeader.CustomerId;
             _context.PreInvoiceHeaders.Update(item);
             await _context.SaveChangesAsync();
-
         }
 
-        public async Task ChangeStatus(PreInvoiceHeaderDomain preInvoiceHeader)
+        public async Task ChangeStatus(int id)
         {
-            PreInvoiceHeaderEntity? item = await GetPreInvoiceHeaderAsync(preInvoiceHeader.Id);
+            PreInvoiceHeaderEntity? item = await GetPreInvoiceHeaderAsync(id);
             if (item is null)
                 return;
-
-            //double currentFinaledAmount = await _preInvoiceDetailsRepository.GetInvoiceTotalAmountAsync(preInvoiceHeader.CustomerId, InvoiceStatus.Final);
-            //if (currentFinaledAmount > 1000000)
-            //    return;
 
             if (item.Status == InvoiceStatus.Final)
                 return;

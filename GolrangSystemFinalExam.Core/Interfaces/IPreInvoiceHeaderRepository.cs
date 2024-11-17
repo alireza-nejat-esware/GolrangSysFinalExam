@@ -8,5 +8,7 @@ namespace GolrangSystemFinalExam.Core.Interfaces
         Task<int> CreateAsync(PreInvoiceHeader preInvoiceHeader);
         Task UpdateAsync(PreInvoiceHeader preInvoiceHeader);
         Task DeleteAsync(int id);
+        Task ChangeStatus(int id);
+
     }
 }
